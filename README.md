@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Openfire ![alt tag](https://raw.githubusercontent.com/igniterealtime/IgniteRealtime-Website/master/src/web/images/logo_openfire.gif)
 ========
 [![Build Status](https://travis-ci.org/igniterealtime/Openfire.svg?branch=master)](https://travis-ci.org/igniterealtime/Openfire)  [![Project Stats](https://www.openhub.net/p/Openfire/widgets/project_thin_badge.gif)](https://www.openhub.net/p/Openfire)
@@ -42,3 +43,7 @@ of the biggest and most active Open Source communities.
 [Openfire]: http://www.igniterealtime.org/projects/openfire/index.jsp
 [Ignite Realtime]: http://www.igniterealtime.org
 [XMPP (Jabber)]: http://xmpp.org/
+=======
+# openfire-caffeine-server
+Openfire based caffeine server (ant build)
+>>>>>>> 2a067e9d167368e1d28d930a520f5c28d16a87b7
