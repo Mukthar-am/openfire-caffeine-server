@@ -1,6 +1,5 @@
 package org.caffeine;
 
-
 import org.jivesoftware.openfire.container.Plugin;
 import org.jivesoftware.openfire.container.PluginManager;
 import org.jivesoftware.openfire.interceptor.InterceptorManager;
@@ -10,13 +9,15 @@ import org.jivesoftware.openfire.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmpp.packet.Packet;
+import org.xmpp.packet.Message;
+import org.xmpp.packet.Packet;
+import org.xmpp.packet.Presence;
 
 import java.io.File;
 
 
-
 public class Caffeine implements PacketInterceptor, Plugin {
-    private static final Logger Log = LoggerFactory.getLogger(Caffeine.class);
+    private Logger LOG = LoggerFactory.getLogger(Caffeine.class);
     private InterceptorManager interceptorManager;
 
     public Caffeine() {
@@ -27,14 +28,15 @@ public class Caffeine implements PacketInterceptor, Plugin {
     public void initializePlugin(PluginManager manager, File pluginDirectory) {
         // register the interceptor
         interceptorManager.addInterceptor(this);
-        Log.info("========= Muks: init plugin: init() ============");
+        LOG.info("========= Muks: init plugin: init() ============");
     }
 
     @Override
     public void destroyPlugin() {
         // unregister the interceptor
         interceptorManager.removeInterceptor(this);
-        Log.info("========= Muks: init plugin: destroy() ============");
+        LOG.info("========= Muks: init plugin: destroy() ============");
+
     }
 
     @Override
@@ -42,7 +44,17 @@ public class Caffeine implements PacketInterceptor, Plugin {
         throws PacketRejectedException {
         if (!processed) {
             // process packet
-            Log.info("========= Muks: init plugin: Intercepted() ============");
+            LOG.info("========= Muks: init plugin: Intercepted() ============");
+            LOG.info(packet.toXML());
+
         }
+
+
+        if (packet instanceof Message) {
+            Message msg = (Message) packet;
+            //process(msg);
+            LOG.info("========= Muks: init plugin ============");
+        }
+        LOG.info("========= Muks: init plugin ============");
     }
 }

@@ -93,51 +93,53 @@
 
     <modules>
         <module>openfire-plugin-assembly-descriptor</module>
-        <module>bookmarks</module>
-        <module>broadcast</module>
-        <module>callbackOnOffline</module>
-        <module>candy</module>
-        <module>certificateManager</module>
-        <module>clientControl</module>
-        <!-- Needs coherence.jar -->
-        <!--<module>clustering</module>-->
-        <module>contentFilter</module>
-        <module>dbaccess</module>
-        <module>emailListener</module>
-        <module>emailOnAway</module>
-        <module>externalservicediscovery</module>
-        <module>fastpath</module>
-        <module>gojara</module>
-        <module>hazelcast</module>
-        <module>httpFileUpload</module>
-        <module>inverse</module>
-        <!-- jnsapi not in Maven Central-->
-        <!--<module>jingleNodes</module>-->
-        <module>jmxweb</module>
-        <module>justmarried</module>
-        <!--<module>kraken</module>-->
-        <module>loadStats</module>
-        <module>monitoring</module>
-        <module>motd</module>
-        <module>mucservice</module>
-        <module>nodejs</module>
-        <module>nonSaslAuthentication</module>
-        <module>packetFilter</module>
-        <!--<module>rayo</module>-->
-        <module>presence</module>
-        <module>registration</module>
-        <module>restAPI</module>
-        <module>search</module>
-        <!-- Missing dependencies -->
-        <!--<module>sip</module>-->
-        <module>stunserver</module>
-        <module>subscription</module>
-        <module>tikitoken</module>
-        <module>userCreation</module>
-        <module>userImportExport</module>
-        <module>userservice</module>
-        <module>userStatus</module>
-        <module>xmldebugger</module>
+        <!--<module>bookmarks</module>-->
+        <!--<module>broadcast</module>-->
+        <!--<module>callbackOnOffline</module>-->
+        <!--<module>candy</module>-->
+        <!--<module>certificateManager</module>-->
+        <!--<module>clientControl</module>-->
+        <!--&lt;!&ndash; Needs coherence.jar &ndash;&gt;-->
+        <!--&lt;!&ndash;<module>clustering</module>&ndash;&gt;-->
+        <!--<module>contentFilter</module>-->
+        <!--<module>dbaccess</module>-->
+        <!--<module>emailListener</module>-->
+        <!--<module>emailOnAway</module>-->
+        <!--<module>externalservicediscovery</module>-->
+        <!--<module>fastpath</module>-->
+        <!--<module>gojara</module>-->
+        <!--<module>hazelcast</module>-->
+        <!--<module>httpFileUpload</module>-->
+        <!--<module>inverse</module>-->
+        <!--&lt;!&ndash; jnsapi not in Maven Central&ndash;&gt;-->
+        <!--&lt;!&ndash;<module>jingleNodes</module>&ndash;&gt;-->
+        <!--<module>jmxweb</module>-->
+        <!--<module>justmarried</module>-->
+        <!--&lt;!&ndash;<module>kraken</module>&ndash;&gt;-->
+        <!--<module>loadStats</module>-->
+        <!--<module>monitoring</module>-->
+        <!--<module>motd</module>-->
+        <!--<module>mucservice</module>-->
+        <!--<module>nodejs</module>-->
+        <!--<module>nonSaslAuthentication</module>-->
+        <!--<module>packetFilter</module>-->
+        <!--&lt;!&ndash;<module>rayo</module>&ndash;&gt;-->
+        <!--<module>presence</module>-->
+        <!--<module>registration</module>-->
+        <!--<module>restAPI</module>-->
+        <!--<module>search</module>-->
+        <!--&lt;!&ndash; Missing dependencies &ndash;&gt;-->
+        <!--&lt;!&ndash;<module>sip</module>&ndash;&gt;-->
+        <!--<module>stunserver</module>-->
+        <!--<module>subscription</module>-->
+        <!--<module>tikitoken</module>-->
+        <!--<module>userCreation</module>-->
+        <!--<module>userImportExport</module>-->
+        <!--<module>userservice</module>-->
+        <!--<module>userStatus</module>-->
+        <!--<module>xmldebugger</module>-->
+        <module>Caffeine</module>
+        <module>openfire-exampleplugin</module>
     </modules>
 
     <organization>
