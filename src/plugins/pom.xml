@@ -139,7 +139,6 @@
         <!--<module>userStatus</module>-->
         <!--<module>xmldebugger</module>-->
         <module>Caffeine</module>
-        <module>openfire-exampleplugin</module>
     </modules>
 
     <organization>
