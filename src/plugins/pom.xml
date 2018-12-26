@@ -94,7 +94,7 @@
     <modules>
         <module>openfire-plugin-assembly-descriptor</module>
         <!--<module>bookmarks</module>-->
-        <!--<module>broadcast</module>-->
+        <module>broadcast</module>
         <!--<module>callbackOnOffline</module>-->
         <!--<module>candy</module>-->
         <!--<module>certificateManager</module>-->
@@ -127,7 +127,7 @@
         <!--<module>presence</module>-->
         <!--<module>registration</module>-->
         <!--<module>restAPI</module>-->
-        <!--<module>search</module>-->
+        <module>search</module>
         <!--&lt;!&ndash; Missing dependencies &ndash;&gt;-->
         <!--&lt;!&ndash;<module>sip</module>&ndash;&gt;-->
         <!--<module>stunserver</module>-->

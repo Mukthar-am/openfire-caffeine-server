@@ -43,6 +43,9 @@ public class Caffeine implements PacketInterceptor, Plugin {
         mServer = XMPPServer.getInstance();
         mPresenceManager = mServer.getPresenceManager();
         mUserManager = mServer.getUserManager();
+
+        LOG.info("");
+        LOG.info("======================================================");
         LOG.info("{} init plugin: init()", TAG);
     }
 
@@ -51,63 +54,75 @@ public class Caffeine implements PacketInterceptor, Plugin {
         // unregister the interceptor
         interceptorManager.removeInterceptor(this);
         LOG.info("{} init plugin: destroyPlugin()", TAG);
+        LOG.info("======================================================");
+        LOG.info("");
 
     }
 
     @Override
     public void interceptPacket(Packet packet, Session session, boolean incoming, boolean processed)
         throws PacketRejectedException {
-        if (!processed) {
-            // process packet
-            LOG.info("{} Msg NOT processed yet!", TAG);
-            LOG.info(packet.toXML() + "\n");
-        }
+        LOG.info("");
+        LOG.info("======================================================");
 
-        if (processed) {
-            LOG.info("{} Processed the message");
-            LOG.info(packet.toXML());
-            return;
-        }
-
-        if (!incoming)
-            LOG.info("{}, Incoming msg: {}", TAG, packet.toXML());
-        else
-            LOG.info("{}, Outgoing msg: {}", TAG, packet.toXML());
-
+        Message msg = (Message) packet;
         if (packet instanceof Message) {
-            LOG.info("{} Packet instance of Message, will be processing now. ");
-            Message msg = (Message) packet;
-            process(msg);
+
+            if (incoming) {
+                LOG.info("InComing From: " + getFromJID(msg) + ", To: " + getToJID(msg) + ", " + msg.getBody());
+            } else {
+                LOG.info("OutGOING From: " + getFromJID(msg) + ", To: " + getToJID(msg) + ", " + msg.getBody());
+            }
+
+            if (!processed) {
+                LOG.info("Packet instance of Message, will be processing now...");
+                process(msg, incoming);
+            } else {
+                LOG.info("Msg is already PROCESSED...");
+            }
+
+
 
         }
         LOG.info("{} init plugin: InterceptionEnd()", TAG);
+        LOG.info("======================================================");
+        LOG.info("");
     }
 
-    private void process(final Message msg) {
-        LOG.info("{} Processing...");
-        try {
-            if (checkTarget(msg)) {
-                LOG.info("GCM Plugin Check=true");
-                TimerTask messageTask = new TimerTask() {
-                    @Override
-                    public void run() {
-                        sendExternalMsg(msg);
-                    }
-                };
-                TaskEngine.getInstance().schedule(messageTask, 20);
-            } else {
-                LOG.info("GCM Plugin Check=false");
-            }
-        } catch (UserNotFoundException e) {
-            LOG.error("GCM Plugin (UserNotFoundException) Something went reeeaaaaally wrong");
-            e.printStackTrace();
-            // Something went reeeaaaaally wrong if you end up here!!
+    private void process(final Message msg, boolean incoming) {
+        LOG.info("Processing...");
+
+        if (hasMessage(msg)) {
+            LOG.info("IsChatMsg: " + getMessageType(msg).equals(Message.Type.valueOf("chat")));
+            LOG.info("To: {}, From: {}", getToJID(msg), getFromJID(msg));
+
+            TimerTask messageTask = new TimerTask() {
+                @Override
+                public void run() {
+                    sendExternalMsg(msg, incoming);
+                }
+            };
+            TaskEngine.getInstance().schedule(messageTask, 20);
+        } else {
+            LOG.info("Message body is empty/null..");
         }
+
     }
 
-    private String getMessageType(Message msg) {
+    private boolean hasMessage(Message msg) {
+        return (msg.getBody() != null);
+    }
 
-        return null;
+    private Message.Type getMessageType(Message msg) {
+        return msg.getType();
+    }
+
+    private JID getToJID(Message msg) {
+        return msg.getTo();
+    }
+
+    private JID getFromJID(Message msg) {
+        return msg.getFrom();
     }
 
     private void processChat() {
@@ -123,36 +138,26 @@ public class Caffeine implements PacketInterceptor, Plugin {
         return true;
     }
 
-    private boolean checkTarget(Message msg) throws UserNotFoundException {
-        if (msg.getBody() == null || msg.getBody().equals("")) {
-            return false;
-        }
-
-        JID toJID = msg.getTo().asBareJID();
+    private boolean isUserOnline(JID toJID) throws UserNotFoundException {
         LOG.info("{} JID={}", TAG, toJID.toFullJID());
-        if (!toJID.getDomain().contains(mServer.getServerInfo().getXMPPDomain())) {
-            LOG.info("Returning from here.");
-            return false;
-        }
+        String toUserName = UserNameManager.getUserName(toJID);
+        LOG.info("ToUserName: {}", toUserName);
+        User toUser = mUserManager.getUser(toUserName);
+        LOG.info("User: {}", toUser.toString());
 
-        String y = UserNameManager.getUserName(toJID);
-        LOG.info("GCM Plugin getUserName(...) = " + y);
-        User x = mUserManager.getUser(y);
-        LOG.info("GCM Plugin getUser(...) = " + x.toString());
-        try {
-            Presence z = mPresenceManager.getPresence(x);
-            if (z == null) return true;
-            LOG.info("GCM Plugin getPresence(...) = " + z.toString());
-            return !z.isAvailable();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        Presence toUserPresenceState = mPresenceManager.getPresence(toUser);
+        if (toUserPresenceState == null) return true;
+        LOG.info("getPresence() = " + toUserPresenceState.toString());
+        return toUserPresenceState.isAvailable();
     }
 
 
-    private void sendExternalMsg(Message msg) {
-        LOG.info("GCM Plugin sendExternalMsg() called");
+
+    private void sendExternalMsg(Message msg, boolean incoming) {
+        if (incoming)
+            LOG.info("Sending INCOMING msg");
+        else
+            LOG.info("Sending OUTGOING msg");
 
         EventObject temp = new EventObject();
         temp.setBody(msg.getBody());
@@ -160,59 +165,6 @@ public class Caffeine implements PacketInterceptor, Plugin {
         temp.setFrom(msg.getFrom().toBareJID());
         LOG.info(temp.toString());
         LOG.info("========= Muks: init plugin ============");
-
-//        try {
-//            if(mDebug){
-//                String x = Request
-//                    .Post(mURL)
-////				.bodyForm(Form.form().add("data", mGson.toJson(temp)).build())
-//                    .bodyString(mGson.toJson(temp), ContentType.APPLICATION_JSON)
-//                    .execute()
-//                    .returnContent().asString();
-//                Log.info("GCM Plugin sendMsg(): "+x);
-//            } else {
-//                Request
-//                    .Post(mURL)
-////				.bodyForm(Form.form().add("data", mGson.toJson(temp)).build())
-//                    .bodyString(mGson.toJson(temp), ContentType.APPLICATION_JSON)
-//                    .execute();
-//            }
-//        } catch (ClientProtocolException e) {
-//            Log.error("GCM Plugin: ClientProtocolException");
-//            Log.error("GCM Plugin: " + e.getMessage());
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            Log.error("GCM Plugin: IOException");
-//            Log.error("GCM Plugin: " + e.getMessage());
-//            e.printStackTrace();
-//        } catch (Exception e){
-//            Log.error("GCM Plugin: (Unknown)Exception");
-//            Log.error("GCM Plugin: " + e.getMessage());
-//            e.printStackTrace();
-//        }
     }
 
-
-//
-//    public String getURL() {
-//        return JiveGlobals.getProperty(URL, null);
-//    }
-//
-//    public String getMode() {
-//        return JiveGlobals.getProperty(MODE, GcmPlugin.MODE_ALL);
-//    }
-//
-//    public void setMode(String mode) {
-//        JiveGlobals.setProperty(MODE, mode);
-//        initConf();
-//    }
-//
-//    public void setDebug(boolean mode) {
-//        if(mode){
-//            JiveGlobals.setProperty(DEBUG, GcmPlugin.DEBUG_ON);
-//        } else {
-//            JiveGlobals.setProperty(DEBUG, GcmPlugin.DEBUG_OFF);
-//        }
-//        initConf();
-//    }
 }
