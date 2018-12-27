@@ -101,20 +101,22 @@ public class Caffeine implements PacketInterceptor, Plugin {
         LOG.info("");
     }
 
-    private void process(final Message msg, boolean incoming) {
+    private void process(Message msg, boolean incoming) {
         LOG.info("Processing...");
 
         if (hasMessage(msg)) {
             LOG.info("IsChatMsg: " + getMessageType(msg).equals(Message.Type.valueOf("chat")));
             LOG.info("To: {}, From: {}", getToJID(msg), getFromJID(msg));
 
-            TimerTask messageTask = new TimerTask() {
-                @Override
-                public void run() {
-                    sendExternalMsg(msg, incoming);
-                }
-            };
-            TaskEngine.getInstance().schedule(messageTask, 20);
+            parseRespond(msg);
+
+//            TimerTask messageTask = new TimerTask() {
+//                @Override
+//                public void run() {
+//                    sendExternalMsg(msg, incoming);
+//                }
+//            };
+//            TaskEngine.getInstance().schedule(messageTask, 20);
 
         } else {
             LOG.info("Message body is empty/null..");
@@ -165,8 +167,17 @@ public class Caffeine implements PacketInterceptor, Plugin {
     }
 
 
+    private void parseRespond(Message msg) {
+        if (msg.getBody().equalsIgnoreCase("hi")) {
+            msg.setBody("Transformed to - Hello msg");
+        }
 
-    private void sendExternalMsg(Message msg, boolean incoming) {
+        if (msg.getBody().equalsIgnoreCase("hello")) {
+            msg.setBody("Transformed to - Hi msg");
+        }
+    }
+
+    private Message sendExternalMsg(Message msg, boolean incoming) {
 
         String msgRoute = "";
         if (incoming)
@@ -175,23 +186,14 @@ public class Caffeine implements PacketInterceptor, Plugin {
             msgRoute = "Sending OUTGOING msg";
 
         EventObject temp = new EventObject();
-        temp.setBody("Re-routing msg - " + msg.getBody());
+        temp.setBody(msg.getBody());
         temp.setTo(msg.getTo().toBareJID());
-        //temp.setTo(msg.getFrom().toBareJID());
         temp.setFrom(msg.getFrom().toBareJID());
 
-        if (msg.getBody().equalsIgnoreCase("hi")) {
-            msg.setBody("HELLOOOOO");
-        }
-
-        if (msg.getBody().equalsIgnoreCase("hello")) {
-            msg.setBody("HIIIIIIIIIIIIIIII");
-        }
-
         LOG.info(msgRoute + "-> " + temp.toString());
-        LOG.info(msgRoute + "-> " + msg.toString());
 
         LOG.info("========= Muks: init plugin ============");
+        return msg;
     }
 
 }
