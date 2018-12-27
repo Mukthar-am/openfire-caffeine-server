@@ -118,7 +118,7 @@
         <!--&lt;!&ndash;<module>kraken</module>&ndash;&gt;-->
         <!--<module>loadStats</module>-->
         <!--<module>monitoring</module>-->
-        <!--<module>motd</module>-->
+        <module>motd</module>
         <!--<module>mucservice</module>-->
         <!--<module>nodejs</module>-->
         <!--<module>nonSaslAuthentication</module>-->

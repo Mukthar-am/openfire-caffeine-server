@@ -1,5 +1,7 @@
 package org.caffeine;
 
+import org.jivesoftware.openfire.ConnectionManager;
+import org.jivesoftware.openfire.MessageRouter;
 import org.jivesoftware.openfire.PresenceManager;
 import org.jivesoftware.openfire.XMPPServer;
 import org.jivesoftware.openfire.container.Plugin;
@@ -12,9 +14,11 @@ import org.jivesoftware.openfire.user.User;
 import org.jivesoftware.openfire.user.UserManager;
 import org.jivesoftware.openfire.user.UserNameManager;
 import org.jivesoftware.openfire.user.UserNotFoundException;
+import org.jivesoftware.util.JiveGlobals;
 import org.jivesoftware.util.TaskEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xmpp.component.ComponentManager;
 import org.xmpp.packet.JID;
 import org.xmpp.packet.Message;
 import org.xmpp.packet.Packet;
@@ -31,6 +35,7 @@ public class Caffeine implements PacketInterceptor, Plugin {
     private XMPPServer mServer;
     private PresenceManager mPresenceManager;
     private UserManager mUserManager;
+    private MessageRouter msgRouter;
 
     public Caffeine() {
         interceptorManager = InterceptorManager.getInstance();
@@ -43,10 +48,13 @@ public class Caffeine implements PacketInterceptor, Plugin {
         mServer = XMPPServer.getInstance();
         mPresenceManager = mServer.getPresenceManager();
         mUserManager = mServer.getUserManager();
+        msgRouter = mServer.getMessageRouter();
 
         LOG.info("");
         LOG.info("======================================================");
         LOG.info("{} init plugin: init()", TAG);
+
+        JiveGlobals.setProperty("Mukthar", "Ahmed");
     }
 
     @Override
@@ -65,6 +73,8 @@ public class Caffeine implements PacketInterceptor, Plugin {
         LOG.info("");
         LOG.info("======================================================");
 
+        LOG.info("JivesGlobal property: " + JiveGlobals.getProperty("Mukthar"));
+
         Message msg = (Message) packet;
         if (packet instanceof Message) {
 
@@ -73,6 +83,8 @@ public class Caffeine implements PacketInterceptor, Plugin {
             } else {
                 LOG.info("OutGOING From: " + getFromJID(msg) + ", To: " + getToJID(msg) + ", " + msg.getBody());
             }
+
+            LOG.info("JivesGlobal property: " + JiveGlobals.getProperty("Mukthar"));
 
             if (!processed) {
                 LOG.info("Packet instance of Message, will be processing now...");
@@ -103,6 +115,7 @@ public class Caffeine implements PacketInterceptor, Plugin {
                 }
             };
             TaskEngine.getInstance().schedule(messageTask, 20);
+
         } else {
             LOG.info("Message body is empty/null..");
         }
@@ -154,16 +167,30 @@ public class Caffeine implements PacketInterceptor, Plugin {
 
 
     private void sendExternalMsg(Message msg, boolean incoming) {
+
+        String msgRoute = "";
         if (incoming)
-            LOG.info("Sending INCOMING msg");
+            msgRoute = "Sending INCOMING msg";
         else
-            LOG.info("Sending OUTGOING msg");
+            msgRoute = "Sending OUTGOING msg";
 
         EventObject temp = new EventObject();
-        temp.setBody(msg.getBody());
+        temp.setBody("Re-routing msg - " + msg.getBody());
         temp.setTo(msg.getTo().toBareJID());
+        //temp.setTo(msg.getFrom().toBareJID());
         temp.setFrom(msg.getFrom().toBareJID());
-        LOG.info(temp.toString());
+
+        if (msg.getBody().equalsIgnoreCase("hi")) {
+            msg.setBody("HELLOOOOO");
+        }
+
+        if (msg.getBody().equalsIgnoreCase("hello")) {
+            msg.setBody("HIIIIIIIIIIIIIIII");
+        }
+
+        LOG.info(msgRoute + "-> " + temp.toString());
+        LOG.info(msgRoute + "-> " + msg.toString());
+
         LOG.info("========= Muks: init plugin ============");
     }
 
