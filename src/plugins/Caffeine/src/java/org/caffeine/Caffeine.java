@@ -1,6 +1,5 @@
 package org.caffeine;
 
-import org.jivesoftware.openfire.ConnectionManager;
 import org.jivesoftware.openfire.MessageRouter;
 import org.jivesoftware.openfire.PresenceManager;
 import org.jivesoftware.openfire.XMPPServer;
@@ -15,16 +14,13 @@ import org.jivesoftware.openfire.user.UserManager;
 import org.jivesoftware.openfire.user.UserNameManager;
 import org.jivesoftware.openfire.user.UserNotFoundException;
 import org.jivesoftware.util.JiveGlobals;
-import org.jivesoftware.util.TaskEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xmpp.component.ComponentManager;
 import org.xmpp.packet.JID;
 import org.xmpp.packet.Message;
 import org.xmpp.packet.Packet;
 import org.xmpp.packet.Presence;
 import java.io.File;
-import java.util.TimerTask;
 
 
 public class Caffeine implements PacketInterceptor, Plugin {
@@ -77,21 +73,8 @@ public class Caffeine implements PacketInterceptor, Plugin {
 
         Message msg = (Message) packet;
         if (packet instanceof Message) {
-
-            if (incoming) {
-                LOG.info("InComing From: " + getFromJID(msg) + ", To: " + getToJID(msg) + ", " + msg.getBody());
-            } else {
-                LOG.info("OutGOING From: " + getFromJID(msg) + ", To: " + getToJID(msg) + ", " + msg.getBody());
-            }
-
+            msgProcessor(msg, incoming, processed);
             LOG.info("JivesGlobal property: " + JiveGlobals.getProperty("Mukthar"));
-
-            if (!processed) {
-                LOG.info("Packet instance of Message, will be processing now...");
-                process(msg, incoming);
-            } else {
-                LOG.info("Msg is already PROCESSED...");
-            }
 
 
 
@@ -101,7 +84,30 @@ public class Caffeine implements PacketInterceptor, Plugin {
         LOG.info("");
     }
 
-    private void process(Message msg, boolean incoming) {
+    private void msgProcessor(Message message, boolean isIncoming, boolean isProcessed) {
+        if (isIncoming)
+            incomingMsgProcessor(message, isProcessed);
+        else
+            outgoingMsgProcessor(message);
+    }
+
+
+    private void incomingMsgProcessor(Message message, boolean isProcessed) {
+        LOG.info("InComing From: " + getFromJID(message) + ", To: " + getToJID(message) + ", " + message.getBody());
+        if (!isProcessed) {
+            LOG.info("Packet instance of Message, will be processing now...");
+            processMessage(message);
+        } else {
+            LOG.info("Msg is already PROCESSED...");
+        }
+
+    }
+
+    private void outgoingMsgProcessor(Message message) {
+        LOG.info("OutGOING From: " + getFromJID(message) + ", To: " + getToJID(message) + ", " + message.getBody());
+    }
+
+    private void processMessage(Message msg) {
         LOG.info("Processing...");
 
         if (hasMessage(msg)) {
